@@ -1,4 +1,5 @@
 # Bugs and Drugs (B.A.D.)
+![logo](https://github.com/NCBI-Hackathons/Versa_AB_Resist/blob/master/bad%20logo%20w%20text.jpg "logo")
 
 *This pipeline builds upon [Nastybugs](https://github.com/NCBI-Hackathons/MetagenomicAntibioticResistance), a program developed in a previous NCBI hackathon designed to extract antimicrobial resistance information from metagenomes.*
 
@@ -8,24 +9,33 @@ The resistome describes all antimicrobial resistance genes, including those foun
 
 ## Software Dependencies
 This program can be used as a standalone in a Jupyter notebook or run in a Docker container. Please ensure that Python version 3.5 or greater with Jupyter module  _**or**_ Docker is installed on your machine.
+Google Cloud Platform VM (VM type, Ubuntu 14.04) is used for the example below.   
 
 ## Installation
 ### Jupyter Notebooks
 ```
-# CODE HERE
+apt-get install -y python3 python3-pip
+python3 -m pip install --upgrade pip
+python3 -m pip install jupyter 
 ```
 ### Docker
-1. First, [install Docker](https://docs.docker.com/install/) if it is not already on your machine. On the Docker website, refer to the menu on the side to find the correct operating system and corresponding installation guide.
-2. Enter the following from the command line to run the docker image:
+1. First, [install Docker](https://docs.docker.com/install/) if it is not already on your machine. On the Docker website, refer to the menu on the side to find the correct ope
+rating system and corresponding installation guide.
+2. Enter the following from the command line to run the docker image, which contains all the tools used in this project:
 ```
-# 1. Pull latest version of docker image
-docker pull stevetsa/metagenomicantibioticresistance:latest
+# 1. Connect to GCP VM and pull latest version of the docker image
 
-# 2. Run the docker image
-docker run -v `pwd`:`pwd` -w `pwd` -i -t stevetsa/metagenomicantibioticresistance:latest
+ssh -L 8888:0.0.0.0:8888 $USER@00.000.000.000
+docker pull stevetsa/versa_ab_resist:latest
 
-# 3. Create directory to store results (this folder will persist on your host machine when you exit out of the Docker container)
-mkdir test
+# 2. Create directory to store results (this folder will persist on your host machine when you exit out of the Docker container)
+mkdir -p test
+chmod -R 777 test
+
+# 3. Run the docker image and mount current directory (and all downstream directories, including "test") in the same path inside the container
+docker run -it --rm -v `pwd`:`pwd` -w `pwd` -p 8888:8888 stevetsa/versa_ab_resist:latest
+
+### Follow on-screen directions to open a Jupyter Notebook in a browser.  Subsequent steps in the pipeline can be run directly in the Notebook.   
 ```
 Please see for further information: [How to use and run a Docker image](https://github.com/NCBI-Hackathons/Cancer_Epitopes_CSHL/blob/master/doc/Docker.md)
 
@@ -43,20 +53,30 @@ These need to be downloaded and unzipped into the 'lib' directory
 
 ## Workflow Steps
 ### Input File Format
-```
-# CODE HERE
-```
+
+1. SRA RUN IDs in id.txt   
+2. SRA BioProject ID  
+3. FASTQ files  
+
 ### Jupyter Notebook
-```
-# CODE HERE
-```
-### Docker Container
-```
-# CODE HERE
-```
+
+The Notebook is used to run the pipeline interactively using the computing resources in the GCP VM.  
+
+### Docker Image
+
+The Docker image contains the Jupyter sever and all the tools used in this pipeline.
+
 ## Output
 
+![kronasample](https://github.com/NCBI-Hackathons/Versa_AB_Resist/blob/master/krona%20sample.png "Kronasample")
+Sample output display courtesy of [Krona](https://github.com/marbl/Krona/wiki).
+An interactive sample can be accessed at this [link](http://marbl.github.io/Krona/examples/phymmbl.krona.html?collapse=false&color=true&key=false).
+
 ## Future Directions
+* Include MINion data from third-generation sequencing
+* Expand number of databases utilized to run alignments
+* Build in more information, such as time and geographical information to map evolution rates
+* Implement machine learning analysis
 
 ## References
 Jia et al. 2017. CARD 2017: expansion and model-centric curation of the Comprehensive Antibiotic Resistance Database. Nucleic Acids Research, 45, D566-573.
